@@ -1,42 +1,26 @@
+constexpr size_t freqs_len = 256;
+
 class Solution {
 public:
-    int longestPalindrome(string s) {
-        array<int, 26> freqs_upper;
-        array<int, 26> freqs_lower;
-
-        for (const char& ch : s) {
-            if (ch >= 'a' && ch <='z') {
-                freqs_lower[static_cast<size_t>(ch -'a')] += 1;
-            } else {
-                freqs_upper[static_cast<size_t>(ch -'A')] += 1;
-            }
+    static int longestPalindrome(const string& s) {
+        const size_t len = s.size();
+        if (len > 2000) {
+            fprintf(stderr, "invalid input: len should be less than 2_000");
+            exit(1);
         }
 
-        int count{0};
-        bool any_odd{false};
+        int16_t freqs[freqs_len] = { 0 };
 
-        for (const int& freq : freqs_lower) {
-            if ((freq & 1) == 1) {
-                count += freq - 1;
-                any_odd = true;
-            } else {
-                count += freq;
-            }
+        for (const char ch : s) {
+            freqs[(unsigned char)(ch)] += 1;
         }
 
-        for (const int& freq : freqs_upper) {
-            if ((freq & 1) == 1) {
-                count += freq - 1;
-                any_odd = true;
-            } else {
-                count += freq;
-            }
+        int cnt = 0;
+
+        for (size_t i = 0; i < freqs_len; i += 1) {
+            cnt += freqs[i] - (freqs[i] & 1);
         }
 
-        if (any_odd) {
-            count += 1;
-        }
-
-        return count;
+        return std::min(cnt + 1, static_cast<int>(len));
     }
 };
