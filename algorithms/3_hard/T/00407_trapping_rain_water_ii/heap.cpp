@@ -1,8 +1,19 @@
+typedef ptrdiff_t isize;
+
+constexpr size_t dir_len = 4;
+constexpr isize directions[dir_len][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+
 class Solution {
     struct Cell {
         int height;
-        size_t i;
-        size_t j;
+        int16_t i;
+        int16_t j;
+
+        Cell(const int height, const int16_t i, const int16_t j) {
+            this->height = height;
+            this->i = i;
+            this->j = j;
+        }
 
         bool operator<(const Cell& other) const {
             return height > other.height;
@@ -10,45 +21,46 @@ class Solution {
     };
 
 public:
-    int trapRainWater(vector<vector<int>>& height_map) {
-        size_t m{height_map.size()};
-        size_t n{height_map[0].size()};
+    static int trapRainWater(const vector<vector<int>>& height_map) {
+        assert(height_map.size() <= 200 && height_map.size() > 0);
+        assert(height_map[0].size() <= 200 && height_map[0].size() > 0);
+        const isize rows = std::ssize(height_map);
+        const isize cols = std::ssize(height_map[0]);
 
-        priority_queue<Cell> heap;
-        vector<vector<bool>> is_visited(m, vector<bool>(n, false));
+        auto heap = priority_queue<Cell>();
+        auto is_visited = vector<uint8_t>(rows * cols, 0);
 
-        for (size_t i{0}; i < m; ++i) {
-            for (size_t j{0}; j < n; ++j) {
-                if (i == 0 || i == m - 1 || j == 0 || j == n - 1) {
-                    is_visited[i][j] = true;
-                    heap.push(Cell{height_map[i][j], i, j});
+        for (isize i = 0; i < rows; i += 1) {
+            for (isize j = 0; j < cols; j += 1) {
+                if (i == 0 || i == rows - 1 || j == 0 || j == cols - 1) {
+                    is_visited[i * cols + j] = 1;
+                    heap.push(Cell(height_map[i][j], static_cast<int16_t>(i), static_cast<int16_t>(j)));
                 }
             }
         }
 
-        int sum{0};
-        int directions[4][2]{{-1, 0}, {0, -1}, {1,0}, {0,1}};
+        int sum = 0;
 
         while (!heap.empty()) {
-            Cell cell = heap.top();
+            const Cell cell = heap.top();
             heap.pop();
 
-            size_t old_j{cell.j};
-            size_t old_i{cell.i};
-            int old_height{cell.height};
+            const isize j = cell.j;
+            const isize i = cell.i;
+            const int height = cell.height;
 
-            for (size_t dir_index{0}; dir_index < 4; ++dir_index) {
-                size_t new_i = static_cast<size_t>(static_cast<int>(old_i) + directions[dir_index][0]);
-                size_t new_j = static_cast<size_t>(static_cast<int>(old_j) + directions[dir_index][1]);
+            for (const auto [dx, dy] : directions) {
+                const int16_t ni = i + dx;
+                const int16_t nj = j + dy;
 
-                if (new_i >= m || new_j >= n || is_visited[new_i][new_j]) {
+                if (ni >= rows || nj >= cols || ni < 0 || nj < 0 || is_visited[ni * cols + nj] == 1) {
                     continue;
                 }
 
-                int new_height{height_map[new_i][new_j]};
-                sum += std::max(0, old_height - new_height);
-                is_visited[new_i][new_j] = true;
-                heap.push(Cell{std::max(new_height, old_height), new_i, new_j});
+                const int nheight = height_map[ni][nj];
+                sum += std::max(0, height - nheight);
+                is_visited[ni * cols + nj] = 1;
+                heap.push(Cell(std::max(nheight, height), static_cast<int16_t>(ni), static_cast<int16_t>(nj)));
             }
         }
 

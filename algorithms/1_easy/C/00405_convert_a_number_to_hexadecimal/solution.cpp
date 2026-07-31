@@ -5,17 +5,18 @@ public:
             return "0";
         }
 
-        unsigned int u_num{static_cast<unsigned int>(num)};
-        string res{};
+        unsigned int u_num = static_cast<unsigned int>(num);
+        auto res= string();
+        res.reserve(8);
 
         while (u_num > 0) {
-            const unsigned int curr_dig{u_num % 16};
+            const unsigned int curr_dig = u_num % 16;
             u_num /= 16;
 
             if (curr_dig > 9) {
-                res.push_back(static_cast<char>(curr_dig - 10) + 'a');
+                res.push_back(curr_dig - 10 + 'a');
             } else {
-                res.push_back(static_cast<char>(curr_dig) + '0');
+                res.push_back(curr_dig + '0');
             }
         }
 

@@ -10,14 +10,14 @@
  * };
  */
 class Solution {
-    int dfs(TreeNode* curr, bool is_left_child) {
+    static int dfs(TreeNode* curr, const bool is_left_child) {
         if (curr == nullptr) {
             return 0;
         }
 
-        int sum{0};
+        int sum = 0;
 
-        if (is_left_child && curr->left == nullptr && curr->right == nullptr){
+        if (is_left_child && curr->left == nullptr && curr->right == nullptr) {
             sum += curr->val;
         }
 
@@ -27,7 +27,7 @@ class Solution {
         return  sum;
     }
 public:
-    int sumOfLeftLeaves(TreeNode* root) {
+    static int sumOfLeftLeaves(TreeNode* root) {
         return dfs(root, false);
     }
 };
