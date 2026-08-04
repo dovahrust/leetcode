@@ -1,11 +1,11 @@
 class Solution {
 public:
-    bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
-        stack<int> stack {};
-        size_t popped_index {0};
-        const size_t popped_len {popped.size()};
+    static bool validateStackSequences(const vector<int>& pushed, const vector<int>& popped) {
+        auto stack = std::stack<int>();
+        size_t popped_index = 0;
+        const size_t popped_len = popped.size();
 
-        for (const auto& val : pushed) {
+        for (const int val : pushed) {
             stack.push(val);
 
             while (!stack.empty() && stack.top() == popped[popped_index]) {
