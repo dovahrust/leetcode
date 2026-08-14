@@ -1,22 +1,22 @@
 class Solution {
 public:
-    int maximumLengthSubstring(string s) {
-        const size_t len {s.size()};
-        array<int, 26> window_freqs;
-        std::ranges::fill(window_freqs, 0);
-        size_t left {0};
-        size_t max {0};
+    static int maximumLengthSubstring(const string& s) {
+        const size_t len = s.size();
+        int8_t freqs[256] = { 0 };
+        size_t lo = 0;
+        size_t max = 0;
 
-        for (size_t right {0}; right < len; ++right) {
-            const size_t index {static_cast<size_t>(s[right] - 'a')};
-            window_freqs[index] += 1;
+        for (size_t hi = 0; hi < len; hi += 1) {
+            const unsigned char ch_hi = static_cast<unsigned char>(s[hi]);
+            freqs[ch_hi] += 1;
 
-            while (window_freqs[index] > 2) {
-                window_freqs[static_cast<size_t>(s[left] - 'a')] -= 1;
-                left += 1;
+            while (freqs[ch_hi] > 2) {
+                const unsigned char ch_lo = static_cast<unsigned char>(s[lo]);
+                freqs[ch_lo] -= 1;
+                lo += 1;
             }
 
-            max = std::max(max, right + 1 - left);
+            max = std::max(max, hi + 1 - lo);
         }
 
         return static_cast<int>(max);

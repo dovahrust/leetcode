@@ -1,18 +1,17 @@
 class Solution:
     def maximumLengthSubstring(self, s: str) -> int:
         n = len(s)
-        window_freqs = [0] * 26
-        left = 0
+        freqs = [0] * 256
+        lo = 0
         res = 0
 
-        for right in range(n):
-            index = ord(s[right]) - ord('a')
-            window_freqs[index] += 1
+        for hi in range(n):
+            freqs[ord(s[hi])] += 1
 
-            while window_freqs[index] > 2:
-                window_freqs[ord(s[left]) - ord('a')] -= 1
-                left += 1
+            while freqs[ord(s[hi])] > 2:
+                freqs[ord(s[lo])] -= 1
+                lo += 1
 
-            res = max(res, right + 1 - left)
+            res = max(res, hi + 1 - lo)
 
         return res
