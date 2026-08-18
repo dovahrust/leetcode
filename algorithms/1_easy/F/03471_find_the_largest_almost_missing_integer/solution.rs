@@ -2,47 +2,54 @@ use std::collections::HashMap;
 
 impl Solution {
     pub fn largest_integer(nums: Vec<i32>, k: i32) -> i32 {
+        assert!(k >= 1 && (k as usize) <= nums.len());
         let len = nums.len();
+        let k = k as usize;
+        let mut res: Option<i32> = None;
 
-        if k as usize >= len {
-            return nums.into_iter().max().unwrap();
-        }
+        if k == len {
+            res = Some(*nums.iter().max().unwrap());
+        } else if k == 1 {
+            let mut freqs: HashMap<i32, bool> = HashMap::new();
 
-        if 1 < k {
-            let freq_first = nums.iter().filter(|x| **x == nums[0]).count();
-            let freq_last = nums.iter().filter(|x| **x == nums[len - 1]).count();
+            for &num in &nums {
+                *freqs.entry(num).and_modify(|x| *x = false).or_insert(true);
+            }
 
-            if freq_first == 1 && freq_last == 1 {
-                return nums[0].max(nums[len - 1]);
-            } else if freq_first == 1 {
-                return nums[0];
-            } else if freq_last == 1 {
-                return nums[len - 1];
-            } else {
-                return -1;
+            for (num, state) in freqs {
+                if state {
+                    res = match res {
+                        None => Some(num),
+                        Some(val) => Some(val.max(num)),
+                    }
+                }
+            }
+        } else {
+            let (first, last) = (nums[0], nums[len - 1]);
+            let (mut cnt_first, mut cnt_last) = (0, 0);
+
+            for &num in &nums {
+                if num == first {
+                    cnt_first += 1;
+                }
+
+                if num == last {
+                    cnt_last += 1;
+                }
+            }
+
+            if cnt_first == 1 && cnt_last == 1 {
+                res = Some(first.max(last));
+            } else if cnt_first == 1 {
+                res = Some(first);
+            } else if cnt_last == 1 {
+                res = Some(last);
             }
         }
 
-        let mut freqs: HashMap<i32, i32> = HashMap::new();
-
-        for num in nums {
-           *freqs.entry(num).or_insert(0) += 1;
+        match res {
+            None => -1,
+            Some(val) => val,
         }
-
-        let mut max = i32::MIN;
-        let mut has_valid_ans = false;
-
-        for (num, freq) in freqs.into_iter() {
-            if freq == 1 {
-                max = max.max(num);
-                has_valid_ans = true;
-            }
-        }
-
-        if !has_valid_ans {
-            return -1;
-        }
-
-        max
     }
 }

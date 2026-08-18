@@ -1,9 +1,9 @@
 class Solution {
 public:
-    int largestInteger(vector<int>& nums, int k) {
-        const size_t len{nums.size()};
+    static int largestInteger(const vector<int>& nums, const int k) {
+        const ptrdiff_t len = std::ssize(nums);
 
-        if (static_cast<size_t>(k) >= len) {
+        if (k >= len) {
             return *(std::max_element(nums.cbegin(), nums.cend()));
         }
 
@@ -22,16 +22,16 @@ public:
             }
         }
 
-        unordered_map<int, int> freqs{};
+        auto freqs = unordered_map<int, int>();
 
-        for (const int& num : nums) {
+        for (const int num : nums) {
            freqs[num] += 1;
         }
 
-        int max{numeric_limits<int>::min()};
-        bool has_valid_ans{false};
+        int max = numeric_limits<int>::min();
+        bool has_valid_ans = false;
 
-        for (const auto& [num, freq] : freqs) {
+        for (const auto [num, freq] : freqs) {
             if (freq == 1) {
                 max = std::max(max, num);
                 has_valid_ans = true;
