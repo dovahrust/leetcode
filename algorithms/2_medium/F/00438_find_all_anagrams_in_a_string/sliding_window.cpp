@@ -1,34 +1,30 @@
 class Solution {
 public:
-    vector<int> findAnagrams(string s, string p) {
-        vector<int> res {};
+    static vector<int> findAnagrams(const string& s, const string& p) {
+        if (p.size() > s.size()) { return vector<int>(); }
 
-        if (p.size() > s.size()) {
-            return res;
+        size_t freqs_p[256] = { 0 };
+        for (const unsigned char ch : p) {
+            freqs_p[ch] += 1;
         }
 
-        const size_t p_len {p.size()};
-        const size_t s_len {s.size()};
-        array<int, 26> freqs_window_s {};
-        array<int, 26> freqs_p {};
+        const size_t s_len = s.size();
+        const size_t p_len = p.size();
+        size_t freqs_window[256] = { 0 };
+        auto res = vector<int>();
+        size_t lo = 0;
 
-        for (size_t i {0}; i < p_len; ++i) {
-            freqs_p[static_cast<size_t>(p[i] - 'a')] += 1;
-            freqs_window_s[static_cast<size_t>(s[i] - 'a')] += 1;
-        }
+        for (size_t hi = 0; hi < s_len; hi += 1) {
+            const size_t idx_bytes_hi = static_cast<unsigned char>(s[hi]);
+            freqs_window[idx_bytes_hi] += 1;
 
-        if (freqs_window_s == freqs_p) {
-            res.push_back(0);
-        }
+            while (freqs_window[idx_bytes_hi] > freqs_p[idx_bytes_hi]) {
+                freqs_window[static_cast<unsigned char>(s[lo])] -= 1;
+                lo += 1;
+            }
 
-        const size_t end {s_len - p_len};
-
-        for (size_t i {0}; i < end; ++i) {
-            freqs_window_s[static_cast<size_t>(s[i] - 'a')] -= 1;
-            freqs_window_s[static_cast<size_t>(s[i + p_len] - 'a')] += 1;
-
-            if (freqs_window_s == freqs_p) {
-                res.push_back(static_cast<int>(i + 1));
+            if (hi - lo + 1 == p_len) {
+                res.push_back(static_cast<int>(lo));
             }
         }
 
