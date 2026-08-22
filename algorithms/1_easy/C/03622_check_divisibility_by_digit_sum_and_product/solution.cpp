@@ -1,9 +1,9 @@
 class Solution {
 public:
-    bool checkDivisibility(int n) {
-        int temp{n};
-        int d_sum{0};
-        int d_mul{1};
+    static bool checkDivisibility(const int n) {
+        int temp = n;
+        int d_sum = 0;
+        int d_mul = 1;
 
         while (temp > 0) {
             const int digit = temp % 10;
