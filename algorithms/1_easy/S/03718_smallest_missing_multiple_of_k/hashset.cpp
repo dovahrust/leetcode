@@ -1,15 +1,16 @@
 class Solution {
 public:
-    int missingMultiple(vector<int>& nums, int k) {
-        unordered_set<int> hashset{};
+    static int missingMultiple(const vector<int>& nums, const int k) {
+        assert(k > 0);
+        auto hashset = unordered_set<int>();
 
-        for (const int &num : nums) {
+        for (const int num : nums) {
             if (num % k == 0) {
                 hashset.insert(num);
             }
         }
 
-        int curr{k};
+        int curr = k;
 
         while (hashset.find(curr) != hashset.end()) {
             curr += k;
