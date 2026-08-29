@@ -15,55 +15,47 @@
 //   }
 // }
 impl Solution {
-
     #[inline(always)]
-    fn calc_len_and_shift_count(mut curr_opt: Option<&Box<ListNode>>, k: i32) -> (i32, i32) {
-        let mut len = 0_i32;
-
+    fn calc_len(mut curr_opt: Option<&Box<ListNode>>) -> i32 {
+        let mut len: i32 = 0;
         while let Some(curr) = curr_opt {
             len += 1;
             curr_opt = curr.next.as_ref();
         }
-
-        let shift_count = if len == 0 { 0 } else { (len - k % len) % len };
-
-        (len, shift_count)
+        len
     }
 
     #[inline(always)]
     fn split_into_two_list(
-        mut head_opt: Option<Box<ListNode>>, shift_count: i32
+        mut head_opt: Option<Box<ListNode>>,
+        shift_cnt: i32
     ) -> (Option<Box<ListNode>>, Option<Box<ListNode>>) {
-        let mut dummy = Box::new(ListNode::new(0));
-        dummy.next = head_opt;
-        let mut prev = &mut dummy;
+        let mut curr = head_opt.as_mut().unwrap();
 
-        for _ in 0..shift_count {
-            prev = prev.next.as_mut().unwrap();
+        for _ in 0..(shift_cnt - 1) {
+            curr = curr.next.as_mut().unwrap();
         }
 
-        let h2 = prev.next.take();
-        let h1 = dummy.next.take();
+        let h2 = curr.next.take();
 
-        (h1, h2)
+        (head_opt, h2)
     }
 
-    pub fn rotate_right(mut head_opt: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
-        let (len, shift_count) = Self::calc_len_and_shift_count(head_opt.as_ref(), k);
+    pub fn rotate_right(head_opt: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
+        let len = Self::calc_len(head_opt.as_ref());
+        if len <= 1 { return head_opt; }
+        let shift_cnt = (len - (k % len)) % len;
+        if shift_cnt == 0 { return head_opt; }
 
-        if len <= 1 || shift_count == 0 {
-            return head_opt;
+        let (h1, mut h2) = Self::split_into_two_list(head_opt, shift_cnt);
+        
+        let mut curr = h2.as_mut().unwrap();
+
+        while curr.next.is_some() {
+            curr = curr.next.as_mut().unwrap();
         }
 
-        let (h1, mut h2) = Self::split_into_two_list(head_opt, shift_count);
-
-        let mut prev = h2.as_mut().unwrap();
-
-        while prev.next.is_some() {
-            prev = prev.next.as_mut().unwrap();
-        }
-
-        prev.next = h1;
+        curr.next = h1;
 
         h2
     }

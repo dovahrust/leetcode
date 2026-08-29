@@ -9,42 +9,36 @@
  * };
  */
 class Solution {
-    static inline pair<int, int> calc_len_and_shift_count(ListNode* head, int k) {
-        int len{ 0 };
-        auto curr{ head };
-
-        while (curr != nullptr) {
+    inline static int calc_len(struct ListNode *head) {
+        int len = 0;
+        while (head != NULL) {
             len += 1;
-            curr = curr->next;
+            head = head->next;
         }
-
-        const int shift_count{ len == 0 ? 0 : (len - k % len) % len };
-
-        return {len, shift_count};
+        return len;
     }
 
-    static inline pair<ListNode*, ListNode*> split_into_two_list(ListNode* head, int shift_count) {
-        auto curr{ head };
+    inline static pair<ListNode*, ListNode*> split_into_two_list(ListNode *head, int shift_cnt) {
+        ListNode* curr = head;
 
-        for (int i{ 0 }; i < shift_count - 1; ++i) {
+        for (int i{ 0 }; i < shift_cnt - 1; i += 1) {
             curr = curr->next;
         }
 
-        auto head2{ curr->next };
+        auto head2 = curr->next;
         curr->next = nullptr;
 
         return {head, head2};
     }
 public:
-    static ListNode* rotateRight(ListNode* head, int k) {
-        const auto [len, shift_count] = calc_len_and_shift_count(head, k);
+    static ListNode *rotateRight(ListNode *head, const int k) {
+        const int len = calc_len(head);
+        if (len <= 1) { return head; }
+        const int shift_cnt = (len - (k % len)) % len;
+        if (shift_cnt == 0) { return head; }
 
-        if (len <= 1 || shift_count == 0) {
-            return head;
-        }
-
-        auto [h1, h2] = split_into_two_list(head, shift_count);
-        auto curr{ h2 };
+        auto [h1, h2] = split_into_two_list(head, shift_cnt);
+        ListNode* curr = h2;
 
         while (curr->next != nullptr) {
             curr = curr->next;
