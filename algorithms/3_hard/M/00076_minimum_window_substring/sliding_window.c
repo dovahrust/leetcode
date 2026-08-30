@@ -1,43 +1,48 @@
 typedef ptrdiff_t isize;
 
-static inline bool is_ok(const isize* freqs)
-{
-    for (int ch = 'A'; ch <= 'z'; ch += 1) {
-        if (freqs[ch] < 0) {
-            return false;
-        }
-    }
-    return true;
-}
+char *minWindow(const char *s, const char *t) {
+    if (s == NULL || s[0] == '\0' || t == NULL || t[0] == '\0') { return NULL; }
 
-char* minWindow(char* s, char* t)
-{
     isize freqs[256] = { 0 };
 
     for (isize i = 0; t[i] != '\0'; i += 1) {
         freqs[(unsigned char)t[i]] -= 1;
     }
 
+    isize missing_distinct = 0;
+    for (isize i = 0; i < 256; i += 1) { 
+        if (freqs[i] != 0) {
+            missing_distinct += 1;
+        }
+    }
     isize lo = 0;
     isize res_start_idx = 0;
     isize res_len = 0;
 
     for (isize hi = 0; s[hi] != '\0'; hi += 1) {
         freqs[(unsigned char)s[hi]] += 1;
+        if (freqs[(unsigned char)s[hi]] == 0) {
+            missing_distinct -= 1;
+        }
 
         while (lo <= hi && freqs[s[lo]] > 0) {
             freqs[(unsigned char)s[lo]] -= 1;
             lo += 1;
         }
 
-        if ((res_len == 0 || res_len > ((hi + 1) - lo)) && is_ok(freqs)) {
+        if (missing_distinct == 0 && (res_len == 0 || res_len > (hi + 1 - lo))) {
             res_start_idx = lo;
             res_len = (hi + 1) - lo;
+            // Remove leftmost required char to continue searching for a smaller window
+            freqs[(unsigned char)s[lo]] -= 1;
+            lo += 1;
+            missing_distinct += 1;
         }
     }
 
-    char* res = malloc((size_t)(res_len + 1) * sizeof(*res));
-    assert(res != NULL);
+    char *res = malloc((size_t)(res_len + 1) * sizeof(*res));
+    if (res == NULL) { return NULL; }
+
     res[res_len] = '\0';
     for (isize i = res_start_idx; i < res_start_idx + res_len; i += 1) {
         res[i - res_start_idx] = s[i];

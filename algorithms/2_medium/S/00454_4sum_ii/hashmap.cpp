@@ -1,28 +1,32 @@
 class Solution {
 public:
-    int fourSumCount(vector<int>& nums1, vector<int>& nums2, vector<int>& nums3, vector<int>& nums4) {
-        const size_t n {nums1.size()};
-        unordered_map<int, int> hashmap;
-        int count {0};
+    static int fourSumCount(
+        const vector<int>& nums1,
+        const vector<int>& nums2,
+        const vector<int>& nums3,
+        const vector<int>& nums4
+    ) {
+        auto hashmap = unordered_map<int, int>();
+        int cnt = 0;
 
-        for (size_t i3 {0}; i3 < n; ++i3) {
-            for (size_t i4 {0}; i4 < n; ++i4) {
-                hashmap[nums3[i3] + nums4[i4]] += 1;
+        for (const int n1 : nums1) {
+            for (const int n2 : nums2) {
+                hashmap[n1 + n2] += 1;
             }
         }
 
-        for (size_t i1 {0}; i1 < n; ++i1) {
-            for (size_t i2 {0}; i2 < n; ++i2) {
-                const int sum {nums1[i1] + nums2[i2]};
-                const int other {-sum};
-                const auto& it {hashmap.find(other)};
+        for (const int n3 : nums3) {
+            for (const int n4 : nums4) {
+                const int sum = n3 + n4;
+                const int other = -sum;
 
+                const auto it  = hashmap.find(other);
                 if (it != hashmap.end()) {
-                    count += it->second;
+                    cnt += it->second;
                 }
             }
         }
 
-        return count;
+        return cnt;
     }
 };

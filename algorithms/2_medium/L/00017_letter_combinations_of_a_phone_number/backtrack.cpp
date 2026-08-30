@@ -1,42 +1,44 @@
 class Solution {
-    vector<vector<char>> num_to_chars {
-        {'a','b','c'},
-        {'d','e','f'},
-        {'g','h','i'},
-        {'j','k','l'},
-        {'m','n','o'},
-        {'p','q','r', 's'},
-        {'t','u','v'},
-        {'w','x','y', 'z'}
-    };
+    inline static string_view get_letters(const char ch) {
+        switch (ch) {
+            case '2': return "abc";
+            case '3': return "def";
+            case '4': return "ghi";
+            case '5': return "jkl";
+            case '6': return "mno";
+            case '7': return "pqrs";
+            case '8': return "tuv";
+            case '9': return "wxyz";
+            default: abort();
+        }
+    }
 
-    void backtrack(
-        vector<string> &res,
-        const string &digits,
-        string &temp,
-        const size_t digits_len,
-        size_t curr_idx
+    static void backtrack(
+        const string_view digits,
+        const size_t idx,
+        string& tmp,
+        vector<string>& res
     ) {
-        if (curr_idx == digits_len) {
-            res.push_back(temp);
+        if (idx == digits.size()) {
+            res.push_back(tmp);
             return;
         }
 
-        size_t num_to_chars_idx = static_cast<size_t>(digits[curr_idx] - '2');
-
-        for (char &ch: num_to_chars[num_to_chars_idx]) {
-            temp.push_back(ch);
-            backtrack(res, digits, temp, digits_len, curr_idx + 1);
-            temp.pop_back();
+        for (const char ch: get_letters(digits[idx])) {
+            tmp.push_back(ch);
+            backtrack(digits, idx + 1, tmp, res);
+            tmp.pop_back();
         }
 
     }
 public:
-    vector<string> letterCombinations(string digits) {
-        vector<string> res;
-        string temp{};
+    static vector<string> letterCombinations(const string& digits) {
+        if (digits.empty()) { return vector<string>(); }
 
-        backtrack(res, digits, temp, digits.size(), 0);
+        auto res = vector<string>();
+        auto tmp = string();
+
+        backtrack(digits, 0, tmp, res);
 
         return res;
     }

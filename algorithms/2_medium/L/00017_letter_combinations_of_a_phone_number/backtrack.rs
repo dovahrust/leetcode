@@ -1,46 +1,47 @@
 impl Solution {
+    #[inline(always)]
+    fn get_letters(byte: u8) -> &'static [u8] {
+        match byte {
+            b'2' => b"abc",
+            b'3' => b"def",
+            b'4' => b"ghi",
+            b'5' => b"jkl",
+            b'6' => b"mno",
+            b'7' => b"pqrs",
+            b'8' => b"tuv",
+            b'9' => b"wxyz",
+            _ => unreachable!(),
+        }
+    }
+
     fn backtrack(
-        res: &mut Vec<String>,
-        digits_bytes: &[u8],
-        map_digit_to_bytes: &[Vec<u8>],
-        temp: &mut Vec<u8>,
-        curr_idx: usize,
-        digits_len: usize,
+        digits: &[u8],
+        idx: usize,
+        tmp: &mut Vec<u8>,
+        res: &mut Vec<String>, 
     ) {
-        if curr_idx == digits_len {
-            res.push(String::from_utf8_lossy(&temp).into_owned());
+        let digits_len = digits.len();
+        if idx == digits_len {
+            res.push(String::from_utf8_lossy(&tmp).into_owned());
             return;
         }
 
-        let num_to_chars_idx = (digits_bytes[curr_idx] - b'2') as usize;
-
-        for &byte in map_digit_to_bytes[num_to_chars_idx].iter() {
-            temp.push(byte);
-            Self::backtrack(res, digits_bytes, map_digit_to_bytes, temp, curr_idx + 1, digits_len);
-            temp.pop();
+        for &byte in Self::get_letters(digits[idx]) {
+            tmp.push(byte);
+            Self::backtrack(digits, idx + 1, tmp, res);
+            tmp.pop();
         }
 
     }
-    
+
     pub fn letter_combinations(digits: String) -> Vec<String> {
-        let map_digit_to_bytes = [
-            vec![b'a',b'b',b'c'],
-            vec![b'd',b'e',b'f'],
-            vec![b'g',b'h',b'i'],
-            vec![b'j',b'k',b'l'],
-            vec![b'm',b'n',b'o'],
-            vec![b'p',b'q',b'r', b's'],
-            vec![b't',b'u',b'v'],
-            vec![b'w',b'x',b'y', b'z']
-        ];
+        if digits.is_empty() { return Vec::new(); }
 
-        let mut temp: Vec<u8> = Vec::new();
+        let mut tmp: Vec<u8> = Vec::with_capacity(digits.len());
         let mut res: Vec<String> = Vec::new();
-        let digits_bytes = digits.into_bytes();
-        let digits_len = digits_bytes.len();
 
-        Self::backtrack(&mut res, &digits_bytes, &map_digit_to_bytes, &mut temp, 0, digits_len);
+        Self::backtrack(digits.as_bytes(), 0, &mut tmp, &mut res);
 
-        return res;
+        res
     }
 }
