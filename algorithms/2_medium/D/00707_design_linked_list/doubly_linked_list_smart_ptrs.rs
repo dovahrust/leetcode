@@ -1,10 +1,10 @@
 use std::cell::RefCell;
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 
 struct Node {
     val: i32,
     next: Option<Rc<RefCell<Node>>>,
-    prev: Option<Rc<RefCell<Node>>>,
+    prev: Option<Weak<RefCell<Node>>>,
 }
 
 impl Node {
@@ -38,7 +38,7 @@ impl MyLinkedList {
     fn get_kth_from_end(&self, k: usize) -> Rc<RefCell<Node>> {
         let mut curr = self.tail.as_ref().unwrap().clone();
         for i in 0..k {
-            let next = curr.borrow().prev.as_ref().unwrap().clone();
+            let next = curr.borrow().prev.as_ref().unwrap().upgrade().unwrap().clone();
             curr = next;
         }
         curr
@@ -65,7 +65,7 @@ impl MyLinkedList {
 
         match self.head.clone() {
             Some(head_node) => {
-                head_node.borrow_mut().prev = Some(node.clone());
+                head_node.borrow_mut().prev = Some(Rc::downgrade(&node));
                 node.borrow_mut().next = Some(head_node);
                 self.head = Some(node);
             },
@@ -77,14 +77,14 @@ impl MyLinkedList {
 
         self.len += 1;
     }
-
+    
     fn add_at_tail(&mut self, val: i32) {
         let mut node = Rc::new(RefCell::new(Node::new(val)));
 
-        match self.tail.clone() {
+        match self.tail.as_mut() {
             Some(tail_node) => {
                 tail_node.borrow_mut().next = Some(node.clone());
-                node.borrow_mut().prev = Some(tail_node);
+                node.borrow_mut().prev = Some(Rc::downgrade(tail_node));
                 self.tail = Some(node);
             },
             None => {
@@ -110,8 +110,8 @@ impl MyLinkedList {
             let mut node = Rc::new(RefCell::new(Node::new(val)));
             node.borrow_mut().next = Some(curr.clone());
             node.borrow_mut().prev = curr.borrow_mut().prev.take();
-            node.borrow_mut().prev.as_ref().unwrap().borrow_mut().next = Some(node.clone());
-            curr.borrow_mut().prev = Some(node);
+            node.borrow().prev.as_ref().unwrap().upgrade().unwrap().borrow_mut().next = Some(node.clone());
+            curr.borrow_mut().prev = Some(Rc::downgrade(&node));
 
             self.len += 1;
         }
@@ -131,17 +131,18 @@ impl MyLinkedList {
             self.head = next;
             self.head.as_mut().unwrap().borrow_mut().prev = None;
             self.len -= 1;
-        } else if (from_right == 0) {
-            let prev = self.tail.as_mut().unwrap().borrow_mut().prev.take();
-            self.tail = prev;
-            self.tail.as_mut().unwrap().borrow_mut().next = None;
+        } 
+        else if (from_right == 0) {
+            let prev = self.tail.as_mut().unwrap().borrow_mut().prev.as_ref().unwrap().upgrade().unwrap();
+            prev.borrow_mut().next.take();
+            self.tail = Some(prev);
             self.len -= 1;
         } else {
             let mut curr = if from_left <= from_right { self.get_kth_from_begin(from_left) } else { self.get_kth_from_end(from_right) };
             let mut next = curr.borrow_mut().next.take();
-            let mut prev = curr.borrow_mut().prev.take();
-            next.as_mut().unwrap().borrow_mut().prev = prev.clone();
-            prev.as_mut().unwrap().borrow_mut().next = next;
+            let mut prev = curr.borrow_mut().prev.take().unwrap().upgrade().unwrap();
+            next.as_mut().unwrap().borrow_mut().prev = Some(Rc::downgrade(&prev));
+            prev.borrow_mut().next = next;
             self.len -= 1;
         }
     }
