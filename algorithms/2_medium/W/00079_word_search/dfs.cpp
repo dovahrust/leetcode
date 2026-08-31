@@ -1,53 +1,42 @@
-static const ssize_t DIRECTIONS[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+typedef ptrdiff_t isize;
+
+constexpr char INVALID_CHAR = '#';
 
 class Solution {
-    static void dfs(
-        const vector<vector<char>>& board,
-        const size_t rows,
-        const size_t cols,
-        const size_t i,
-        const size_t j,
-        vector<vector<bool>>& is_visited,
-        const string &word,
-        const size_t word_len,
-        const size_t word_idx,
-        bool &is_find
+    static bool dfs(
+        vector<vector<char>>& board, const isize rows, const isize cols,
+        const isize i, const isize j,
+        const string& word, const isize word_len, const isize word_idx
     ) {
-        if (is_find) { return; }
-
-        if (word_idx == word_len) {
-            is_find = true;
-            return;
+        if (word_len == word_idx) {
+            return true;
         }
 
-        if (i >= rows || j >= cols || is_visited[i][j] || board[i][j] != word[word_idx]) {
-            return;
+        if (i < 0 || i >= rows || j < 0 || j >= cols || board[i][j] != word[word_idx]) {
+            return false;
         }
 
-        is_visited[i][j] = true;
+        const char orig = board[i][j];
+        board[i][j] = INVALID_CHAR;
 
-        for (const auto [dx, dy] : DIRECTIONS) {
-            const size_t new_i = static_cast<ssize_t>(i) + dx;
-            const size_t new_j = static_cast<ssize_t>(j) + dy;
-            dfs(board, rows, cols, new_i, new_j, is_visited, word, word_len, word_idx + 1, is_find);
-        }
+        const bool res = dfs(board, rows, cols, i + 1, j, word, word_len, word_idx + 1) ||
+                         dfs(board, rows, cols, i - 1, j, word, word_len, word_idx + 1) ||
+                         dfs(board, rows, cols, i, j + 1, word, word_len, word_idx + 1) ||
+                         dfs(board, rows, cols, i, j - 1, word, word_len, word_idx + 1);
 
-        is_visited[i][j] = false;
+        board[i][j] = orig;
+
+        return res;
     }
 public:
-    static bool exist(const vector<vector<char>>& board, const string& word) {
-        const size_t rows = board.size();
-        const size_t cols = board[0].size();
-        const size_t word_len = word.size();
-        const size_t word_idx = 0;
-        auto is_visited = vector<vector<bool>>(rows, vector<bool>(cols, false));
-        bool is_find = false;
+    static bool exist(vector<vector<char>>& board, const string word) {
+        const isize rows = std::ssize(board);
+        const isize cols = std::ssize(board[0]);
+        const isize word_len = std::ssize(word);
 
-        for (size_t i = 0; i < rows; i += 1) {
-            for (size_t j = 0; j < cols; j += 1) {
-                dfs(board, rows, cols, i, j, is_visited, word, word_len, word_idx, is_find);
-
-                if(is_find) {
+        for (isize i = 0; i < rows; i += 1) {
+            for (isize j = 0; j < cols; j += 1) {
+                if (dfs(board, rows, cols, i, j, word, word_len, 0)) {
                     return true;
                 }
             }
