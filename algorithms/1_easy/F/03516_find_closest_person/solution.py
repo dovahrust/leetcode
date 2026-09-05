@@ -1,3 +1,11 @@
-class Solution(object):
-    def findClosest(self, x, y, z):
-        return (abs(z-x) < abs(y-z)) + 2 *((abs(z-x) > abs(y-z)))
+class Solution:
+    def findClosest(self, x: int, y: int, z: int) -> int:
+        dx = abs(z - x)
+        dy = abs(z - y)
+
+        if dx < dy:
+            return 1
+        elif dx > dy:
+            return 2
+        else:
+            return 0

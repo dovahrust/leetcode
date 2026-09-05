@@ -1,27 +1,24 @@
 class Solution {
 public:
-    bool checkPerfectNumber(int num) {
-        if(num==1) {
-            return false;
-        }
+    static bool checkPerfectNumber(const int num) {
+        if (num <= 1) { return false; }
 
-        int sum{1};
-        int sq{static_cast<int>(sqrt(num))};
+        int sum = 1;
+        const int sq = static_cast<int>(sqrt(num));
 
-        for (int i{2}; i <= sq; ++i) {
+        for (int i = 2; i <= sq; i += 1) {
             if (num % i == 0) {
                 sum += i;
 
-                if(i != sq){
-                    sum += num / i;
-                } else if(num / i != i) {
-                    sum += num / i;
+                const int other = num / i;
+                if (i != other) {
+                    sum += other;
                 }
 
-                if(sum > num) {
+                if (sum > num) {
                     return false;
                 }
-            }            
+            }
         }
 
         return sum == num;
