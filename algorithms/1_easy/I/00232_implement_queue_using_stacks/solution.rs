@@ -3,7 +3,6 @@ struct MyQueue {
     get_stack: Vec<i32>
 }
 
-
 impl MyQueue {
 
     fn new() -> Self {
@@ -20,23 +19,21 @@ impl MyQueue {
             }
         }
     }
-    
+
     fn push(&mut self, x: i32) {
         self.put_stack.push(x);
     }
-    
+
     fn pop(&mut self) -> i32 {
         self.fill_get_stack();
-        let val = self.get_stack[self.get_stack.len() - 1];
-        self.get_stack.pop();
-        val
+        self.get_stack.pop().unwrap()
     }
-    
+
     fn peek(&mut self) -> i32 {
         self.fill_get_stack();
-        self.get_stack[self.get_stack.len() - 1]
+        *self.get_stack.last().unwrap()
     }
-    
+
     fn empty(&self) -> bool {
         self.get_stack.is_empty() && self.put_stack.is_empty()
     }
