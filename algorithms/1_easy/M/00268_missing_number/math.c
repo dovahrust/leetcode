@@ -1,14 +1,12 @@
-int missingNumber(int* nums, int nums_size)
-{
-    assert(nums != NULL && nums_size > 0);
-    const ptrdiff_t len = nums_size;
+int missingNumber(const int *restrict nums, const int len) {
+    if (nums == NULL || len <= 0) { return -1; }
+
     int sum = 0;
 
-    for (ptrdiff_t i = 0; i < len; i += 1) {
+    for (int i = 0; i < len; i += 1) {
         sum += nums[i];
     }
 
-    assert((len * (len + 1)) / 2 <= INT_MAX);
-    const int target_sum = (int) ((len * (len + 1)) / 2);
+    const int target_sum = (len * (len + 1)) / 2;
     return target_sum - sum;
 }

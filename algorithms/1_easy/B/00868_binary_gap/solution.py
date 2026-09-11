@@ -1,17 +1,18 @@
-BITS_COUNT = 32
-
 class Solution:
     def binaryGap(self, n: int) -> int:
-        prev_valid_bit = (0, False)
-        max_dist = 0
+        while n > 0 and (n & 1) != 1:
+            n >>= 1
 
-        for i in range(BITS_COUNT):
-            mask = 1 << i
+        cnt = 0
+        res = 0
 
-            if (mask & n) != 0:
-                if prev_valid_bit[1]:
-                    max_dist = max(max_dist, i - prev_valid_bit[0])
+        while n > 1:
+            if (n & 1) == 1:
+                cnt = 1
+            else:
+                cnt += 1
 
-                prev_valid_bit = (i, True)
+            res = max(res, cnt)
+            n >>= 1
 
-        return max_dist
+        return res

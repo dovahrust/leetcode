@@ -1,23 +1,25 @@
-const size_t BITS_COUNT{ 32 };
-
 class Solution {
 public:
-    static int binaryGap(int n) {
-        auto prev_valid_bit{ pair<size_t, bool>{0, false} };
-        size_t max_dist{ 0 };
-
-        for (size_t i{ 0 }; i < BITS_COUNT; ++i) {
-            const int mask{ 1 << i };
-
-            if ((mask & n) != 0) {
-                if (prev_valid_bit.second) {
-                    max_dist = std::max(max_dist, i - prev_valid_bit.first);
-                }
-
-                prev_valid_bit = {i, true};
-            }
+    static int binaryGap(const int n_int) {
+        uint32_t n = static_cast<uint32_t>(n_int);
+        while (n > 0 && (n & 1) != 1) {
+            n >>= 1;
         }
 
-        return static_cast<int>(max_dist);
+        int cnt = 0;
+        int max = 0;
+
+        while (n > 1) {
+            if ((n & 1) == 1) {
+                cnt = 1;
+            } else {
+                cnt += 1;
+            }
+
+            max = std::max(max, cnt);
+            n >>= 1;
+        }
+
+        return max;
     }
 };

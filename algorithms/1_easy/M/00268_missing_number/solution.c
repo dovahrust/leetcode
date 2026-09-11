@@ -1,10 +1,8 @@
-int missingNumber(int* nums, int nums_size)
-{
-    assert(nums != NULL && nums_size > 0);
-    const ptrdiff_t len = nums_size;
+int missingNumber(int *restrict nums, const int len) {
+    if (nums == NULL || len <= 0) { return -1; }
 
-    for (ptrdiff_t i = 0; i < len; i += 1) {
-        const ptrdiff_t num_as_index = nums[i] < 0 ? abs(nums[i]) - 1: nums[i];
+    for (int i = 0; i < len; i += 1) {
+        const int num_as_index = nums[i] < 0 ? ABS(nums[i]) - 1: nums[i];
         assert(num_as_index <= len);
 
         if (num_as_index != len) {
@@ -12,13 +10,13 @@ int missingNumber(int* nums, int nums_size)
         }
     }
 
-    for (ptrdiff_t i = 0; i < len; i += 1) {
+    for (int i = 0; i < len; i += 1) {
         if (nums[i] >= 0) {
-            return (int) i;
+            return i;
         }
 
         i += 1;
     }
 
-    return (int) len;
+    return len;
 }
