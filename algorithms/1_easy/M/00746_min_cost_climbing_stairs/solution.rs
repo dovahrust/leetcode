@@ -1,11 +1,12 @@
 impl Solution {
-    pub fn min_cost_climbing_stairs(mut cost: Vec<i32>) -> i32 {
-        let len = cost.len();
+    pub fn min_cost_climbing_stairs(cost: Vec<i32>) -> i32 {
+        let (mut prev, mut prev_prev) = (0_i32, 0_i32);
 
-        for i in (0..(len - 2)).rev() {
-            cost[i] += cost[i + 1].min(cost[i + 2]);
+        for c in cost {
+            let curr = c + prev.min(prev_prev);
+            (prev_prev, prev) = (prev, curr);
         }
 
-        return cost[0].min(cost[1]);
+        prev.min(prev_prev)
     }
 }
