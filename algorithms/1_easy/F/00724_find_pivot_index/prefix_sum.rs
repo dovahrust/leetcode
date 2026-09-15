@@ -1,20 +1,16 @@
 impl Solution {
     pub fn pivot_index(nums: Vec<i32>) -> i32 {
+        let mut suff: i32 = nums.iter().sum();
+        let mut pref: i32 = 0;
 
-        let len = nums.len(); 
-        let mut postfix_sum: i32 = nums.iter().sum();
-        let mut prefix_sum = 0_i32;
+        for (i, &num) in nums.iter().enumerate() {
+            suff -= num;
 
-        for i in 0..len {
-            if i > 0 {
-                prefix_sum += nums[i - 1];
+            if pref == suff {
+                return i.try_into().unwrap();
             }
 
-            postfix_sum -= nums[i];
-
-            if prefix_sum == postfix_sum {
-                return i as i32;
-            }
+            pref += num;
         }
 
         -1
