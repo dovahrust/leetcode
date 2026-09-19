@@ -1,31 +1,33 @@
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum State {
+    NotSeen,
+    OnceSeen(usize),
+    MultiSeen,
+}
+
 impl Solution {
     pub fn first_uniq_char(s: String) -> i32 {
-        let mut freqs = [(0_i32, 0_usize); 26];
-        let len = s.len();
+        let mut states = [State::NotSeen; 256];
 
-        for (i, byte) in s.as_bytes().iter().enumerate() {
-            let char_as_index = (*byte - b'a') as usize;
-
-            if freqs[char_as_index].0 == 0 {
-                freqs[char_as_index].0 = 1;
-                freqs[char_as_index].1 = i;
+        for (i, &byte) in s.as_bytes().into_iter().enumerate() {
+            if states[byte as usize] == State::NotSeen {
+                states[byte as usize] = State::OnceSeen(i);
             } else {
-                freqs[char_as_index].0 = 2;
+                states[byte as usize] = State::MultiSeen;
             }
         }
 
-        let mut res = len;
+        let mut res: Option<usize> = None;
 
-        for (count, index) in freqs.iter() {
-            if *count == 1 {
-                res = res.min(*index);
+        for state in states {
+            if let State::OnceSeen(idx) = state {
+                res = Some(res.map_or(idx, |other_idx| other_idx.min(idx)));
             }
         }
 
-        if res == len {
-           return  -1;
+        match res {
+            None => -1,
+            Some(idx) => idx.try_into().unwrap(),
         }
-
-        res as i32
     }
 }
