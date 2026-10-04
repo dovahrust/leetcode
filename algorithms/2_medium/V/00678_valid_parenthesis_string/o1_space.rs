@@ -1,46 +1,42 @@
 impl Solution {
     pub fn check_valid_string(s: String) -> bool {
-        let mut points = 0_i32;
-        let mut balance = 0_i32;
+        let mut points: isize = 0;
+        let mut balance: isize = 0;
 
-        for byte in s.as_bytes().iter() {
-            if *byte == b')' {
-                balance -= 1;
+        for &byte in s.as_bytes().iter() {
+            match byte {
+                b'(' => balance += 1,
+                b'*' => points += 1,
+                b')' => {
+                    balance -= 1;
+                    if balance < 0 {
+                        if points <= 0 { return false; }
 
-                if balance < 0 {
-                    if points > 0 {
                         points -= 1;
                         balance += 1;
-                    } else {
-                        return false;
                     }
-                }
-            } else if *byte == b'(' {
-                balance += 1;
-            } else {
-                points += 1;
+                },
+                _ => unreachable!("invalid input"),
             }
         }
 
-        balance = 0;
-        points = 0;
+        let mut points: isize = 0;
+        let mut balance: isize = 0;
 
-        for byte in s.as_bytes().iter().rev() {
-            if *byte == b'(' {
-                balance -= 1;
+        for &byte in s.as_bytes().iter().rev() {
+            match byte {
+                b')' => balance += 1,
+                b'*' => points += 1,
+                b'(' => {
+                    balance -= 1;
+                    if balance < 0 {
+                        if points <= 0 { return false; }
 
-                if balance < 0 {
-                    if points > 0 {
                         points -= 1;
                         balance += 1;
-                    } else {
-                        return false;
                     }
-                }
-            } else if *byte == b')' {
-                balance += 1;
-            } else {
-                points += 1;
+                },
+                _ => unreachable!("invalid input"),
             }
         }
 
