@@ -1,24 +1,24 @@
 class Solution:
-    def generate_parenthesis_backtrack(self, tmp_list, n, open_count, close_count):
-        if open_count == n and close_count == n:
-            self.res.append("".join(tmp_list))
+    def dfs(self, n, open_cnt, close_cnt):
+        if open_cnt == n and close_cnt == n:
+            self.res.append("".join(self.tmp_list))
             return
 
-        if open_count < n:
-            tmp_list.append('(')
-            self.generate_parenthesis_backtrack(tmp_list, n, open_count + 1, close_count);
-            tmp_list.pop()
+        if open_cnt < n:
+            self.tmp_list.append('(')
+            self.dfs(n, open_cnt + 1, close_cnt)
+            self.tmp_list.pop()
 
-        if close_count < open_count:
-            tmp_list.append(')')
-            self.generate_parenthesis_backtrack(tmp_list, n, open_count, close_count + 1)
-            tmp_list.pop()
-
+        if close_cnt < open_cnt:
+            self.tmp_list.append(')')
+            self.dfs(n, open_cnt, close_cnt + 1)
+            self.tmp_list.pop()
+    
     def generateParenthesis(self, n: int) -> List[str]:
         self.res = []
-        tmp_list = []
+        self.tmp_list = []
 
-        self.generate_parenthesis_backtrack(tmp_list, n, 0, 0)
+        self.dfs(n, 0, 0)
 
         return self.res
-
+        
