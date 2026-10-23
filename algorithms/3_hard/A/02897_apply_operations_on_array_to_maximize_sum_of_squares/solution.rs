@@ -1,39 +1,43 @@
 impl Solution {
+    const MOD: u64 = 1_000_000_007;
+    const INF: u64 = u64::MAX;
+
     pub fn max_sum(nums: Vec<i32>, k: i32) -> i32 {
-        let mut freqs_bits = [0_i32; 32];
-        const MOD_TO: i64 = 1_000_000_007;
-        let mut res = 0_i64;
+        assert!(k >= 1 && (k as usize) <= nums.len());
+        let mut freqs = [0_u64; 32];
 
-        for it in nums.iter() {
-            let mut num = *it;
-            let mut freqs_index = 0_usize;
-
-            while num > 0 {
-                if (num & 1) == 1 {
-                    freqs_bits[freqs_index] += 1;
+        for num_i32 in nums {
+            let num = num_i32 as u32;
+            for i in 0..32_u32 {
+                let mask: u32 = (1 << i);
+                if (mask & num) != 0 {
+                    freqs[i as usize] += 1;
                 }
-
-                num = num >> 1;
-                freqs_index += 1;
             }
         }
 
-        let max_freq = *freqs_bits.iter().max().unwrap();
-        let number_of_iter = max_freq.min(k);
-
-        for _ in 0..number_of_iter {
-            let mut curr = 0_i64;
-
-            for freq in freqs_bits.iter_mut().rev() {
-                curr = curr << 1;
-
-                if *freq > 0 {
-                    *freq -= 1;
-                    curr |= 1;
+        let mut res: u64 = 0;
+        let mut k = k as u64;
+        while k > 0 {
+            let mut min_freq_non_zero = Self::INF;
+            let mut curr: u64 = 0;
+            for i in 0..32_u64 {
+                if freqs[i as usize] != 0 {
+                    min_freq_non_zero = min_freq_non_zero.min(freqs[i as usize]);
+                    let mask: u64 = (1 << i);
+                    curr |= mask;
                 }
             }
+            min_freq_non_zero = min_freq_non_zero.min(k);
+            k -= min_freq_non_zero;
+            let base = (curr * curr) % Self::MOD;
+            res = (res + base * min_freq_non_zero) % Self::MOD;
 
-            res = (res + curr * curr) % MOD_TO;
+            for i in 0..32 {
+                if freqs[i] != 0 {
+                    freqs[i] -= min_freq_non_zero;
+                }
+            }
         }
 
         res as i32
