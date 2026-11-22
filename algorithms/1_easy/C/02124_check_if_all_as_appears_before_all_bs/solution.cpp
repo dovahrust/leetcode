@@ -1,8 +1,11 @@
 class Solution {
 public:
-    bool checkString(string s) {
-        for (auto it{s.cbegin() + 1}; it != s.cend(); ++it) {
-            if (*it < *(it - 1)) {
+    static bool checkString(const string& s) {
+        bool seen_b = false;
+        for (const auto ch : s) {
+            if (ch == 'b') {
+                seen_b = true;
+            } else if (seen_b) {
                 return false;
             }
         }
