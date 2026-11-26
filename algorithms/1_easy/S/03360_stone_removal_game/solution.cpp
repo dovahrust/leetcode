@@ -1,8 +1,8 @@
 class Solution {
 public:
-    bool canAliceWin(int n) {
-        int step{10};
-        bool is_winning{false};
+    static bool canAliceWin(int n) {
+        int step = 10;
+        bool is_winning = false;
 
         while (step > 0 && step <= n) {
             n -= step;
